@@ -1,4 +1,7 @@
 import requests
+import csv
+
+id = 57253
 
 class CriticalPower:
 
@@ -46,12 +49,19 @@ class ZwiftPowerAnalysis:
                 baseRow.append(dataPoint["y"])
             rows.append(baseRow)
         return rows
+
+    def exportToCSV(self):
+        fileName = "output.csv"
+        with open(fileName, "a", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerows(self.toRows())
+
         
 
 def getData(id):
     return requests.get("https://www.zwiftpower.com/api3.php?do=set_analysis&set_id=" + str(id), headers={"User-Agent": r"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"})
 
-id = 57253
 data = getData(id)
 zwiftPowerAnalysis = ZwiftPowerAnalysis.fromResponse(data.json(), id)
 print(zwiftPowerAnalysis.toRows())
+zwiftPowerAnalysis.exportToCSV()
